@@ -18,7 +18,7 @@ spec:
       containers:
         - name: books-svc
           imagePullPolicy: Always
-          image: pawmot/envoy-snt-books-svc:0.1.0
+          image: pawmot/envoy-snt-books-svc:0.2.0
           ports:
             - containerPort: 8080
               name: http
@@ -27,6 +27,27 @@ spec:
               port: 8080
               path: "/health"
               scheme: HTTP
+        - name: mesh-proxy
+          image: envoyproxy/envoy:v1.14-latest
+          ports:
+            - containerPort: 8786
+              name: http
+            - containerPort: 9901
+              name: admin
+          volumeMounts:
+            - mountPath: /etc/envoy-config/
+              name: envoy-conf-vol
+          command: ["/usr/local/bin/envoy"]
+          args: ["-c", "/etc/envoy-config/config.yaml", "-l", "info",
+                 "--service-cluster", "booksSvc", "--service-node", "booksSvc",
+                 "--log-format", "[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v"]
+      volumes:
+        - name: envoy-conf-vol
+          configMap:
+            name: envoy-snt-books-proxy
+            items:
+              - key: envoy-config
+                path: config.yaml
 ---
 apiVersion: v1
 kind: Service
@@ -34,10 +55,10 @@ metadata:
   namespace: envoy-snt
   name: envoy-snt-books-svc
 spec:
-  type: ClusterIP
+  clusterIP: None
   selector:
     app: envoy-snt-books-svc
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 8786
+      targetPort: 8786

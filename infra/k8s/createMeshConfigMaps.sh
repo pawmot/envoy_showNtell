@@ -13,3 +13,7 @@ function createSecret() {
 }
 
 createSecret "envoy-snt-front-proxy" "../mesh/frontProxy.yaml"
+createSecret "envoy-snt-fe-proxy" "../mesh/feProxy.yaml"
+createSecret "envoy-snt-bff-proxy" "../mesh/bffProxy.yaml"
+createSecret "envoy-snt-books-proxy" "../mesh/booksProxy.yaml"
+createSecret "envoy-snt-reviews-proxy" "../mesh/reviewsProxy.yaml"

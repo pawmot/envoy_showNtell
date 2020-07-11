@@ -38,15 +38,17 @@ static_resources:
     - name: "frontendSvc"
       connect_timeout: "0.25s"
       type: "strict_dns"
-      lb_policy: "ROUND_ROBIN"
+      lb_policy: "LEAST_REQUEST"
+      dns_lookup_family: "v4_only"
       hosts:
         - socket_address:
             address: "envoy-snt-fe"
-            port_value: 8080
+            port_value: 8786
     - name: "bffSvc"
       connect_timeout: "0.25s"
       type: "strict_dns"
-      lb_policy: "ROUND_ROBIN"
+      lb_policy: "LEAST_REQUEST"
+      dns_lookup_family: "v4_only"
       hosts:
         - socket_address:
             address: "envoy-snt-bff"

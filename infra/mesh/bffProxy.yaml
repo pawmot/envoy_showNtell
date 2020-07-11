@@ -1,0 +1,105 @@
+admin:
+  access_log_path: "/tmp/admin_access.log"
+  address:
+    socket_address:
+      address: "127.0.0.1"
+      port_value: 9901
+static_resources:
+  listeners:
+    - name: "bff-http-listener"
+      address:
+        socket_address:
+          address: "0.0.0.0"
+          port_value: 8786
+      filter_chains:
+        - filters:
+            - name: "envoy.http_connection_manager"
+              config:
+                stat_prefix: "ingress"
+                codec_type: "AUTO"
+                route_config:
+                  name: "bff-http-route"
+                  virtual_hosts:
+                    - name: "bff-http-route"
+                      domains:
+                        - "*"
+                      routes:
+                        - match:
+                            prefix: "/"
+                          route:
+                            cluster: "bff"
+                http_filters:
+                  - name: "envoy.router"
+    - name: "books-svc-http-listener"
+      address:
+        socket_address:
+          address: "0.0.0.0"
+          port_value: 8800
+      filter_chains:
+        - filters:
+            - name: "envoy.http_connection_manager"
+              config:
+                stat_prefix: "egress"
+                codec_type: "AUTO"
+                route_config:
+                  name: "books-svc-http-route"
+                  virtual_hosts:
+                    - name: "books-svc-http-route"
+                      domains:
+                        - "*"
+                      routes:
+                        - match:
+                            prefix: "/"
+                          route:
+                            cluster: "books-svc"
+                http_filters:
+                  - name: "envoy.router"
+    - name: "reviews-svc-http-listener"
+      address:
+        socket_address:
+          address: "0.0.0.0"
+          port_value: 8801
+      filter_chains:
+        - filters:
+            - name: "envoy.http_connection_manager"
+              config:
+                stat_prefix: "egress"
+                codec_type: "AUTO"
+                route_config:
+                  name: "reviews-svc-http-route"
+                  virtual_hosts:
+                    - name: "reviews-svc-http-route"
+                      domains:
+                        - "*"
+                      routes:
+                        - match:
+                            prefix: "/"
+                          route:
+                            cluster: "reviews-svc"
+                http_filters:
+                  - name: "envoy.router"
+  clusters:
+    - name: "bff"
+      connect_timeout: "0.25s"
+      type: "static"
+      lb_policy: "RANDOM"
+      hosts:
+        - socket_address:
+            address: "127.0.0.1"
+            port_value: 8080
+    - name: "books-svc"
+      connect_timeout: "0.25s"
+      type: "strict_dns"
+      lb_policy: "ROUND_ROBIN"
+      hosts:
+        - socket_address:
+            address: "envoy-snt-books-svc"
+            port_value: 8786
+    - name: "reviews-svc"
+      connect_timeout: "0.25s"
+      type: "strict_dns"
+      lb_policy: "ROUND_ROBIN"
+      hosts:
+        - socket_address:
+            address: "envoy-snt-reviews-svc"
+            port_value: 8786

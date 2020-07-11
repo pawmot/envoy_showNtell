@@ -65,13 +65,13 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Books> {
-            val books = client.get<List<BookListItem>>("http://envoy-snt-books-svc:8080/books")
+            val books = client.get<List<BookListItem>>("http://localhost:8800/books")
             call.respond(HttpStatusCode.OK, books)
         }
 
         get<Books.Details> { detailsReq ->
-            val details = client.get<BookDetails>("http://envoy-snt-books-svc:8080/books/${detailsReq.id}")
-            val reviews = client.get<List<BookReview>>("http://envoy-snt-reviews-svc:8080/books/${detailsReq.id}/reviews")
+            val details = client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}")
+            val reviews = client.get<List<BookReview>>("http://localhost:8801/books/${detailsReq.id}/reviews")
             call.respond(HttpStatusCode.OK, BookView(details, reviews))
         }
     }
