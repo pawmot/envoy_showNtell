@@ -16,4 +16,7 @@ subprojects {
         maven { url = uri("https://kotlin.bintray.com/ktor") }
         maven { url = uri("https://kotlin.bintray.com/kotlinx") }
     }
+
+    group = "com.pawmot.snt.envoy"
+    version = "0.1.0"
 }

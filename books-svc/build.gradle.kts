@@ -11,9 +11,6 @@ plugins {
     id("com.google.cloud.tools.jib") version "2.4.0"
 }
 
-group = "com.pawmot.snt.envoy"
-version = "0.1.0"
-
 application {
     mainClassName = "io.ktor.server.cio.EngineMain"
 }

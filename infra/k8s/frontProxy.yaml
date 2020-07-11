@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: envoy-snt
+  name: envoy-snt-front-proxy
+spec:
+  type: ClusterIP
+  selector:
+    app: envoy-snt-front-proxy
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-snt-front-proxy
+  namespace: envoy-snt
+  labels:
+    app: envoy-snt-front-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: envoy-snt-front-proxy
+  template:
+    metadata:
+      labels:
+        app: envoy-snt-front-proxy
+    spec:
+      containers:
+        - name: front-proxy
+          image: envoyproxy/envoy:v1.14-latest
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 9901
+              name: admin
+          volumeMounts:
+            - mountPath: /etc/envoy-config/
+              name: envoy-conf-vol
+          command: ["/usr/local/bin/envoy"]
+          args: ["-c", "/etc/envoy-config/config.yaml", "-l", "info",
+                 "--service-cluster", "front-proxy", "--service-node", "front-proxy",
+                 "--log-format", "[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v"]
+      volumes:
+        - name: envoy-conf-vol
+          configMap:
+            name: envoy-snt-front-proxy
+            items:
+              - key: envoy-config
+                path: config.yaml

@@ -8,13 +8,8 @@ spec:
     - host: snt.local
       http:
         paths:
-        - path: /api
-          pathType: Prefix
-          backend:
-            serviceName: envoy-snt-bff
-            servicePort: 8080
         - path: /
           pathType: Prefix
           backend:
-            serviceName: envoy-snt-fe
-            servicePort: 8080
+            serviceName: envoy-snt-front-proxy
+            servicePort: 80
