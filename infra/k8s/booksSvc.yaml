@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-snt-books-svc
+  namespace: envoy-snt
+  labels:
+    app: envoy-snt-books-svc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: envoy-snt-books-svc
+  template:
+    metadata:
+      labels:
+        app: envoy-snt-books-svc
+    spec:
+      containers:
+        - name: books-svc
+          imagePullPolicy: Always
+          image: pawmot/envoy-snt-books-svc:0.1.0
+          ports:
+            - containerPort: 8080
+              name: http
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: "/health"
+              scheme: HTTP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: envoy-snt
+  name: envoy-snt-books-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: envoy-snt-books-svc
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

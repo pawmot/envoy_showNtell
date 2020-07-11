@@ -1,0 +1,32 @@
+mat-sidenav-container {
+  height: 100%;
+}
+
+mat-sidenav {
+  min-width: 300px;
+}
+
+.book {
+  cursor: pointer;
+}
+
+.selected {
+  font-weight: bold;
+  background-color: dodgerblue;
+}
+
+mat-sidenav-content {
+  padding: 30px;
+}
+
+mat-card {
+  margin-bottom: 30px;
+}
+
+mat-card:last-of-type {
+  margin-bottom: 0;
+}
+
+mat-card.review {
+  background-color: dodgerblue;
+}

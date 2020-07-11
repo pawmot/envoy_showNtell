@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  namespace: envoy-snt
+  name: envoy-snt-ingress
+spec:
+  rules:
+    - host: snt.local
+      http:
+        paths:
+        - path: /api
+          pathType: Prefix
+          backend:
+            serviceName: envoy-snt-bff
+            servicePort: 8080
+        - path: /
+          pathType: Prefix
+          backend:
+            serviceName: envoy-snt-fe
+            servicePort: 8080

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-snt-reviews-svc
+  namespace: envoy-snt
+  labels:
+    app: envoy-snt-reviews-svc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: envoy-snt-reviews-svc
+  template:
+    metadata:
+      labels:
+        app: envoy-snt-reviews-svc
+    spec:
+      containers:
+        - name: reviews-svc
+          imagePullPolicy: Always
+          image: pawmot/envoy-snt-reviews-svc:0.1.0
+          ports:
+            - containerPort: 8080
+              name: http
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: "/health"
+              scheme: HTTP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: envoy-snt
+  name: envoy-snt-reviews-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: envoy-snt-reviews-svc
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

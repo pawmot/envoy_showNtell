@@ -1,0 +1,34 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened>
+    <mat-list>
+      <mat-list-item
+        *ngFor="let book of books"
+        (click)="select(book)"
+        class="book"
+        [class.selected]="selectedBook === book">
+        {{book.title}}
+      </mat-list-item>
+    </mat-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div *ngIf="selectedBookDetails">
+      <mat-card>
+        <mat-card-title>{{selectedBookDetails.details.title}}</mat-card-title>
+        <mat-card-subtitle>{{selectedBookDetails.details.author}}</mat-card-subtitle>
+        <mat-card-content>{{selectedBookDetails.details.description}}</mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-title>Reviews</mat-card-title>
+        <mat-card-content>
+          <mat-card *ngFor="let review of selectedBookDetails.reviews" class="review">
+            <mat-card-title>Rating: {{review.rating}}</mat-card-title>
+            <mat-card-content>{{review.text}}</mat-card-content>
+          </mat-card>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div *ngIf="!selectedBookDetails">
+      Please select a book
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

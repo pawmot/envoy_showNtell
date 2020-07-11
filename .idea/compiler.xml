@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="13">
+      <module name="bff" target="1.8" />
+      <module name="bff.main" target="1.8" />
+      <module name="bff.test" target="1.8" />
+      <module name="book-svc" target="1.8" />
+      <module name="book-svc.main" target="1.8" />
+      <module name="book-svc.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-snt-fe
+  namespace: envoy-snt
+  labels:
+    app: envoy-snt-fe
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: envoy-snt-fe
+  template:
+    metadata:
+      labels:
+        app: envoy-snt-fe
+    spec:
+      containers:
+        - name: fe
+          imagePullPolicy: Always
+          image: pawmot/envoy-snt-fe:0.1.0
+          ports:
+            - containerPort: 8080
+              name: http
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: "/health"
+              scheme: HTTP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: envoy-snt
+  name: envoy-snt-fe
+spec:
+  type: ClusterIP
+  selector:
+    app: envoy-snt-fe
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
