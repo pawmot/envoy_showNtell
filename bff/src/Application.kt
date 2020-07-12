@@ -87,25 +87,29 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Books.Details> { detailsReq ->
-            val details = client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}") {
-                tracingHeadersToPropagate.forEach {
-                    if(call.request.headers.contains(it)) {
-                        val headerValue = call.request.headers[it]!!
-                        log.info("$it: $headerValue")
-                        headers.append(it, headerValue)
+            val details = async {
+                client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}") {
+                    tracingHeadersToPropagate.forEach {
+                        if (call.request.headers.contains(it)) {
+                            val headerValue = call.request.headers[it]!!
+                            log.info("$it: $headerValue")
+                            headers.append(it, headerValue)
+                        }
                     }
                 }
             }
-            val reviews = client.get<List<BookReview>>("http://localhost:8801/books/${detailsReq.id}/reviews") {
-                tracingHeadersToPropagate.forEach {
-                    if(call.request.headers.contains(it)) {
-                        val headerValue = call.request.headers[it]!!
-                        log.info("$it: $headerValue")
-                        headers.append(it, headerValue)
+            val reviews = async {
+                client.get<List<BookReview>>("http://localhost:8801/books/${detailsReq.id}/reviews") {
+                    tracingHeadersToPropagate.forEach {
+                        if (call.request.headers.contains(it)) {
+                            val headerValue = call.request.headers[it]!!
+                            log.info("$it: $headerValue")
+                            headers.append(it, headerValue)
+                        }
                     }
                 }
             }
-            call.respond(HttpStatusCode.OK, BookView(details, reviews))
+            call.respond(HttpStatusCode.OK, BookView(details.await(), reviews.await()))
         }
     }
 }
