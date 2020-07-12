@@ -11,7 +11,6 @@ static_resources:
         socket_address:
           address: "0.0.0.0"
           port_value: 8786
-      traffic_direction: INBOUND
       filter_chains:
         - filters:
             - name: envoy.filters.network.http_connection_manager
@@ -46,7 +45,6 @@ static_resources:
         socket_address:
           address: "0.0.0.0"
           port_value: 8800
-      traffic_direction: OUTBOUND
       filter_chains:
         - filters:
             - name: envoy.filters.network.http_connection_manager
@@ -59,7 +57,7 @@ static_resources:
                       "@type": type.googleapis.com/envoy.config.trace.v2.ZipkinConfig
                       collector_cluster: tracing
                       collector_endpoint: "/api/v2/spans"
-                      shared_span_context: true
+                      shared_span_context: false
                       collector_endpoint_version: HTTP_JSON
                 stat_prefix: "egress"
                 codec_type: "AUTO"
@@ -81,7 +79,6 @@ static_resources:
         socket_address:
           address: "0.0.0.0"
           port_value: 8801
-      traffic_direction: OUTBOUND
       filter_chains:
         - filters:
             - name: envoy.filters.network.http_connection_manager
@@ -94,7 +91,7 @@ static_resources:
                       "@type": type.googleapis.com/envoy.config.trace.v2.ZipkinConfig
                       collector_cluster: tracing
                       collector_endpoint: "/api/v2/spans"
-                      shared_span_context: true
+                      shared_span_context: false
                       collector_endpoint_version: HTTP_JSON
                 stat_prefix: "egress"
                 codec_type: "AUTO"

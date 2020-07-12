@@ -18,7 +18,7 @@ spec:
       containers:
         - name: fe
           imagePullPolicy: Always
-          image: pawmot/envoy-snt-fe:0.3.0
+          image: pawmot/envoy-snt-fe:0.4.0
           ports:
             - containerPort: 8080
               name: http

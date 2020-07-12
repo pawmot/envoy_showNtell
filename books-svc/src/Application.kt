@@ -10,6 +10,8 @@ import io.ktor.locations.*
 import io.ktor.gson.*
 import io.ktor.features.*
 import io.ktor.util.DataConversionException
+import kotlinx.coroutines.time.delay
+import java.time.Duration
 import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
@@ -57,6 +59,7 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Books.Individual> { detailsReq ->
+            delay(Duration.ofMillis(400))
             val book = books.firstOrNull { it.id == detailsReq.id }
             if (book != null) {
                 call.respond(HttpStatusCode.OK, book)

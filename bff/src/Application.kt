@@ -76,7 +76,7 @@ fun Application.module(testing: Boolean = false) {
         get<Books> {
             val books = client.get<List<BookListItem>>("http://localhost:8800/books") {
                 tracingHeadersToPropagate.forEach {
-                    if(call.request.headers.contains(it)) {
+                    if (call.request.headers.contains(it)) {
                         val headerValue = call.request.headers[it]!!
                         log.info("$it: $headerValue")
                         headers.append(it, headerValue)
