@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Book, BookDetails} from './model';
+import {delay} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,6 @@ export class BooksService {
         } else {
           throw res.statusText;
         }
-      })
+      });
   }
 }
