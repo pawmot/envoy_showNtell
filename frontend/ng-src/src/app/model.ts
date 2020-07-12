@@ -17,4 +17,6 @@ export interface BookDetails {
     text: string;
     rating: number;
   }];
+
+  nonFatalErrors: {[key: string]: string}
 }

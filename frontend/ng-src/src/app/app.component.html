@@ -24,6 +24,10 @@
             <mat-card-title>Rating: {{review.rating}}</mat-card-title>
             <mat-card-content>{{review.text}}</mat-card-content>
           </mat-card>
+          <div *ngIf="selectedBookDetails.nonFatalErrors.reviews">
+            Could not load reviews
+            <button mat-icon-button (click)="select(selectedBook)" color="primary"><mat-icon>replay</mat-icon></button>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>

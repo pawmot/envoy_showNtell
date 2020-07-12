@@ -18,7 +18,7 @@ spec:
       containers:
         - name: bff
           imagePullPolicy: Always
-          image: pawmot/envoy-snt-bff:0.5.0
+          image: pawmot/envoy-snt-bff:0.6.0
           ports:
             - containerPort: 8080
               name: http

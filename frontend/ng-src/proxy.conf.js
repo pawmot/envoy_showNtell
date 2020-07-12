@@ -39,11 +39,13 @@ const PROXY_CONFIG = {
               "text": "I could not understand a word",
               "rating": 1
             }
-          ]
+          ],
+          nonFatalErrors: {}
         };
 
-        res.statusCode = 500;
-        res.end(JSON.stringify(result));
+        let ok = Math.random() > 0.5;
+
+        res.end(!ok ? JSON.stringify(result) : JSON.stringify({...result, reviews: [], nonFatalErrors: { reviews: "ERR" }}));
         return true;
       }
     }

@@ -10,12 +10,14 @@ import io.ktor.locations.*
 import io.ktor.gson.*
 import io.ktor.features.*
 import io.ktor.client.*
+import io.ktor.client.call.receive
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.*
 import io.ktor.client.features.logging.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.util.DataConversionException
 import java.util.*
 
@@ -87,7 +89,7 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Books.Details> { detailsReq ->
-            val details = async {
+            val detailsDeff = async {
                 client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}") {
                     tracingHeadersToPropagate.forEach {
                         if (call.request.headers.contains(it)) {
@@ -98,8 +100,8 @@ fun Application.module(testing: Boolean = false) {
                     }
                 }
             }
-            val reviews = async {
-                client.get<List<BookReview>>("http://localhost:8801/books/${detailsReq.id}/reviews") {
+            val reviewsResponseDeff = async {
+                client.get<HttpResponse>("http://localhost:8801/books/${detailsReq.id}/reviews") {
                     tracingHeadersToPropagate.forEach {
                         if (call.request.headers.contains(it)) {
                             val headerValue = call.request.headers[it]!!
@@ -109,7 +111,15 @@ fun Application.module(testing: Boolean = false) {
                     }
                 }
             }
-            call.respond(HttpStatusCode.OK, BookView(details.await(), reviews.await()))
+
+            val details = detailsDeff.await()
+            val reviewsResponse = reviewsResponseDeff.await()
+
+            if (reviewsResponse.status == HttpStatusCode.OK) {
+                call.respond(HttpStatusCode.OK, BookView(details, reviews = reviewsResponse.receive()))
+            } else {
+                call.respond(HttpStatusCode.OK, BookView(details, nonFatalErrors = mapOf(Pair("reviews", reviewsResponse.status.description))))
+            }
         }
     }
 }
@@ -123,4 +133,4 @@ class Books {
 data class BookListItem(val id: UUID, val title: String)
 data class BookDetails(val id: UUID, val title: String, val author: String, val description: String)
 data class BookReview(val bookId: UUID, val id: String, val text: String, val rating: Int)
-data class BookView(val details: BookDetails, val reviews: List<BookReview>)
+data class BookView(val details: BookDetails, val reviews: List<BookReview> = emptyList(), val nonFatalErrors: Map<String, String> = emptyMap())
