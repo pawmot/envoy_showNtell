@@ -18,7 +18,7 @@ spec:
       containers:
         - name: books-svc
           imagePullPolicy: Always
-          image: pawmot/envoy-snt-books-svc:0.6.0
+          image: pawmot/envoy-snt-books-svc:0.7.0
           ports:
             - containerPort: 8080
               name: http

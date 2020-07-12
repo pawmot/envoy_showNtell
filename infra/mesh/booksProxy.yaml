@@ -39,6 +39,14 @@ static_resources:
                           route:
                             cluster: "books-svc"
                 http_filters:
+                  - name: envoy.fault
+                    config:
+                      delay:
+                        fixed_delay:
+                          seconds: 10
+                        percentage:
+                          numerator: 10
+                          denominator: HUNDRED
                   - name: "envoy.router"
   clusters:
     - name: "books-svc"

@@ -65,7 +65,6 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Reviews> { reviewsReq ->
-            delay(Duration.ofMillis(400))
             val reviews = reviews[reviewsReq.id]
             if (reviews != null) {
                 call.respond(HttpStatusCode.OK, reviews)

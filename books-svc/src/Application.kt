@@ -59,7 +59,6 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Books.Individual> { detailsReq ->
-            delay(Duration.ofMillis(400))
             val book = books.firstOrNull { it.id == detailsReq.id }
             if (book != null) {
                 call.respond(HttpStatusCode.OK, book)
