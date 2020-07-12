@@ -42,6 +42,7 @@ const PROXY_CONFIG = {
           ]
         };
 
+        res.statusCode = 500;
         res.end(JSON.stringify(result));
         return true;
       }

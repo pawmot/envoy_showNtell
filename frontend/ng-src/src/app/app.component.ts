@@ -17,6 +17,7 @@ export class AppComponent implements OnInit {
   books: Book[];
   loadingCtr = 0;
   overlayRef: MatDialogRef<ProgressSpinnerDialogComponent> = null;
+  errorText = "";
 
   constructor(private service: BooksService, private dialog: MatDialog) {
   }
@@ -35,10 +36,14 @@ export class AppComponent implements OnInit {
     this.loadingCtr++;
     this.selectedBook = book;
     let selectedBookDetails: BookDetails;
+    let errorText = "";
     try {
       selectedBookDetails = await this.service.getBookDetails(book.id);
+    } catch (e) {
+      errorText = e.toString();
     } finally {
       this.loadingCtr--;
+      this.errorText = errorText;
 
       if (this.loadingCtr === 0) {
         this.overlayRef.close();

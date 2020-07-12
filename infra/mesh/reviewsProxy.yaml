@@ -39,6 +39,13 @@ static_resources:
                           route:
                             cluster: "reviews-svc"
                 http_filters:
+                  - name: envoy.fault
+                    config:
+                      abort:
+                        http_status: 500
+                        percentage:
+                          numerator: 50
+                          denominator: HUNDRED
                   - name: "envoy.router"
   clusters:
     - name: "reviews-svc"

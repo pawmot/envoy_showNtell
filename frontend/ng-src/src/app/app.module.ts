@@ -10,6 +10,8 @@ import {MatListModule} from '@angular/material/list';
 import { ProgressSpinnerDialogComponent } from './progress-spinner-dialog/progress-spinner-dialog.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatCardModule,
     MatListModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

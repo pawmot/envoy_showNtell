@@ -35,6 +35,9 @@ export class BooksService {
         } else {
           throw res.statusText;
         }
+      })
+      .catch(e => {
+        throw e.statusText;
       });
   }
 }

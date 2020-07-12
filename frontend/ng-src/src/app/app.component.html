@@ -11,7 +11,7 @@
     </mat-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <div *ngIf="selectedBookDetails">
+    <div *ngIf="selectedBookDetails && !errorText">
       <mat-card>
         <mat-card-title>{{selectedBookDetails.details.title}}</mat-card-title>
         <mat-card-subtitle>{{selectedBookDetails.details.author}}</mat-card-subtitle>
@@ -27,8 +27,12 @@
         </mat-card-content>
       </mat-card>
     </div>
-    <div *ngIf="!selectedBookDetails">
+    <div *ngIf="!selectedBookDetails && !errorText">
       Please select a book
+    </div>
+    <div *ngIf="errorText">
+      Got error from server: {{errorText}}
+      <button mat-icon-button (click)="select(selectedBook)" color="primary"><mat-icon>replay</mat-icon></button>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

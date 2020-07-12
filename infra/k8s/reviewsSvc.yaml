@@ -18,7 +18,7 @@ spec:
       containers:
         - name: reviews-svc
           imagePullPolicy: Always
-          image: pawmot/envoy-snt-reviews-svc:0.4.0
+          image: pawmot/envoy-snt-reviews-svc:0.5.0
           ports:
             - containerPort: 8080
               name: http
