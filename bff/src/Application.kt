@@ -16,10 +16,13 @@ import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 import io.ktor.client.features.logging.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.util.DataConversionException
+import kotlinx.coroutines.channels.Channel
 import java.util.*
+import kotlin.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
@@ -76,21 +79,8 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Books> {
-            val books = client.get<List<BookListItem>>("http://localhost:8800/books") {
-                tracingHeadersToPropagate.forEach {
-                    if (call.request.headers.contains(it)) {
-                        val headerValue = call.request.headers[it]!!
-                        log.info("$it: $headerValue")
-                        headers.append(it, headerValue)
-                    }
-                }
-            }
-            call.respond(HttpStatusCode.OK, books)
-        }
-
-        get<Books.Details> { detailsReq ->
-            val detailsDeff = async {
-                client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}") {
+            val books = getWithTailChop({
+                client.get<List<BookListItem>>("http://localhost:8800/books") {
                     tracingHeadersToPropagate.forEach {
                         if (call.request.headers.contains(it)) {
                             val headerValue = call.request.headers[it]!!
@@ -99,6 +89,23 @@ fun Application.module(testing: Boolean = false) {
                         }
                     }
                 }
+            }, 200, this)
+            call.respond(HttpStatusCode.OK, books)
+        }
+
+        get<Books.Details> { detailsReq ->
+            val detailsDeff = async {
+                getWithTailChop({
+                    client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}") {
+                        tracingHeadersToPropagate.forEach {
+                            if (call.request.headers.contains(it)) {
+                                val headerValue = call.request.headers[it]!!
+                                log.info("$it: $headerValue")
+                                headers.append(it, headerValue)
+                            }
+                        }
+                    }
+                }, 200, this)
             }
             val reviewsResponseDeff = async {
                 client.get<HttpResponse>("http://localhost:8801/books/${detailsReq.id}/reviews") {
@@ -134,3 +141,44 @@ data class BookListItem(val id: UUID, val title: String)
 data class BookDetails(val id: UUID, val title: String, val author: String, val description: String)
 data class BookReview(val bookId: UUID, val id: String, val text: String, val rating: Int)
 data class BookView(val details: BookDetails, val reviews: List<BookReview> = emptyList(), val nonFatalErrors: Map<String, String> = emptyMap())
+
+suspend inline fun <reified T> getWithTailChop(crossinline op: suspend () -> T, tailChopDelayMs: Long, scope: CoroutineScope): T {
+    val chan = Channel<TailChopResult>(1)
+    val jobs = mutableListOf<Job>()
+
+    val runOp = {
+        scope.launch {
+            val res = op()
+            chan.send(Data(res))
+        }
+    }
+
+    val runTimeout = {
+        scope.launch {
+            delay(tailChopDelayMs)
+            chan.send(Timeout)
+        }
+    }
+
+    jobs.add(runOp())
+    jobs.add(runTimeout())
+
+    for (res in chan) {
+        when (res) {
+            Timeout -> {
+                jobs.add(runOp())
+                jobs.add(runTimeout())
+            }
+            is Data<*> -> {
+                jobs.forEach { it.cancel() }
+                return res.d as T
+            }
+        }
+    }
+
+    throw RuntimeException("Could not get the data")
+}
+
+interface TailChopResult
+data class Data<T>(val d: T) : TailChopResult
+object Timeout : TailChopResult
