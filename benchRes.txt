@@ -1,0 +1,44 @@
+This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking snt.local (be patient).....done
+
+
+Server Software:        nginx/1.19.0
+Server Hostname:        snt.local
+Server Port:            80
+
+Document Path:          /api/books/4857cbaa-4894-437e-9df6-f692d91eda72
+Document Length:        446 bytes
+
+Concurrency Level:      10
+Time taken for tests:   10.713 seconds
+Complete requests:      100
+Failed requests:        44
+   (Connect: 0, Receive: 0, Length: 44, Exceptions: 0)
+Total transferred:      87844 bytes
+HTML transferred:       62332 bytes
+Requests per second:    9.33 [#/sec] (mean)
+Time per request:       1071.317 [ms] (mean)
+Time per request:       107.132 [ms] (mean, across all concurrent requests)
+Transfer rate:          8.01 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   1.1      0       5
+Processing:     7  749 2558.4     20   10034
+Waiting:        7  749 2558.3     20   10034
+Total:          7  749 2558.3     20   10034
+
+Percentage of the requests served within a certain time (ms)
+  50%     20
+  66%     27
+  75%     54
+  80%     64
+  90%    440
+  95%  10016
+  98%  10027
+  99%  10034
+ 100%  10034 (longest request)
+
