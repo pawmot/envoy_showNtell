@@ -21,6 +21,15 @@ import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
+val tracingHeadersToPropagate = setOf(
+        "X-Request-Id",
+        "X-B3-TraceId",
+        "X-B3-SpanId",
+        "X-B3-ParentSpanId",
+        "X-B3-Sampled",
+        "X-B3-Flags"
+)
+
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
@@ -55,7 +64,7 @@ fun Application.module(testing: Boolean = false) {
             serializer = GsonSerializer()
         }
         install(Logging) {
-            level = LogLevel.HEADERS
+            level = LogLevel.INFO
         }
     }
 
@@ -65,13 +74,37 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get<Books> {
-            val books = client.get<List<BookListItem>>("http://localhost:8800/books")
+            val books = client.get<List<BookListItem>>("http://localhost:8800/books") {
+                tracingHeadersToPropagate.forEach {
+                    if(call.request.headers.contains(it)) {
+                        val headerValue = call.request.headers[it]!!
+                        log.info("$it: $headerValue")
+                        headers.append(it, headerValue)
+                    }
+                }
+            }
             call.respond(HttpStatusCode.OK, books)
         }
 
         get<Books.Details> { detailsReq ->
-            val details = client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}")
-            val reviews = client.get<List<BookReview>>("http://localhost:8801/books/${detailsReq.id}/reviews")
+            val details = client.get<BookDetails>("http://localhost:8800/books/${detailsReq.id}") {
+                tracingHeadersToPropagate.forEach {
+                    if(call.request.headers.contains(it)) {
+                        val headerValue = call.request.headers[it]!!
+                        log.info("$it: $headerValue")
+                        headers.append(it, headerValue)
+                    }
+                }
+            }
+            val reviews = client.get<List<BookReview>>("http://localhost:8801/books/${detailsReq.id}/reviews") {
+                tracingHeadersToPropagate.forEach {
+                    if(call.request.headers.contains(it)) {
+                        val headerValue = call.request.headers[it]!!
+                        log.info("$it: $headerValue")
+                        headers.append(it, headerValue)
+                    }
+                }
+            }
             call.respond(HttpStatusCode.OK, BookView(details, reviews))
         }
     }

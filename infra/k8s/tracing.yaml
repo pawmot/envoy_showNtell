@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: envoy-snt
+  name: tracing
+  labels:
+    app: tracing
+spec:
+  containers:
+    - name: jaeger-aio
+      image: jaegertracing/all-in-one
+      ports:
+        - containerPort: 16686
+          name: ui
+        - containerPort: 9411
+          name: zipkin
+      env:
+        - name: COLLECTOR_ZIPKIN_HTTP_PORT
+          value: "9411"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: envoy-snt
+  name: tracing
+spec:
+  type: ClusterIP
+  selector:
+    app: tracing
+  ports:
+    - name: zipkin
+      port: 9411
+      targetPort: 9411
+    - name: ui
+      port: 16686
+      targetPort: 16686

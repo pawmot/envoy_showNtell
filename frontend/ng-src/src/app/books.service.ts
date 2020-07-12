@@ -10,7 +10,9 @@ export class BooksService {
   constructor(private httpClient: HttpClient) { }
 
   getAllBooks(): Promise<Book[]> {
-    return this.httpClient.get<Book[]>("/api/books", {observe: 'response'})
+    return this.httpClient.get<Book[]>("/api/books", {observe: 'response', headers: {
+        "X-b3-sampled": "1"
+      }})
       .toPromise()
       .then(res => {
         if (res.ok) {
@@ -22,7 +24,9 @@ export class BooksService {
   }
 
   getBookDetails(id: string): Promise<BookDetails> {
-    return this.httpClient.get<BookDetails>(`/api/books/${id}`, { observe: 'response'})
+    return this.httpClient.get<BookDetails>(`/api/books/${id}`, { observe: 'response', headers: {
+        "X-b3-sampled": "1"
+      }})
       .toPromise()
       .then(res => {
         if (res.ok) {

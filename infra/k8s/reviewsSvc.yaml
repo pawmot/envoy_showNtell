@@ -18,7 +18,7 @@ spec:
       containers:
         - name: reviews-svc
           imagePullPolicy: Always
-          image: pawmot/envoy-snt-reviews-svc:0.2.0
+          image: pawmot/envoy-snt-reviews-svc:0.3.0
           ports:
             - containerPort: 8080
               name: http
@@ -28,7 +28,7 @@ spec:
               path: "/health"
               scheme: HTTP
         - name: mesh-proxy
-          image: envoyproxy/envoy:v1.14-latest
+          image: envoyproxy/envoy-dev:latest
           ports:
             - containerPort: 8786
               name: http

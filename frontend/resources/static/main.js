@@ -253,7 +253,9 @@ class BooksService {
         this.httpClient = httpClient;
     }
     getAllBooks() {
-        return this.httpClient.get("/api/books", { observe: 'response' })
+        return this.httpClient.get("/api/books", { observe: 'response', headers: {
+                "X-b3-sampled": "1"
+            } })
             .toPromise()
             .then(res => {
             if (res.ok) {
@@ -265,7 +267,9 @@ class BooksService {
         });
     }
     getBookDetails(id) {
-        return this.httpClient.get(`/api/books/${id}`, { observe: 'response' })
+        return this.httpClient.get(`/api/books/${id}`, { observe: 'response', headers: {
+                "X-b3-sampled": "1"
+            } })
             .toPromise()
             .then(res => {
             if (res.ok) {

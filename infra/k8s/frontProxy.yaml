@@ -4,7 +4,7 @@ metadata:
   namespace: envoy-snt
   name: envoy-snt-front-proxy
 spec:
-  type: ClusterIP
+  clusterIP: None
   selector:
     app: envoy-snt-front-proxy
   ports:
@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: front-proxy
-          image: envoyproxy/envoy:v1.14-latest
+          image: envoyproxy/envoy-dev:latest
           ports:
             - containerPort: 80
               name: http
